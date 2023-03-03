@@ -1,0 +1,33 @@
+import requests
+import json
+
+# WHMCS API credentials
+api_url = "https://your-whmcs-site.com/includes/api.php"
+api_identifier = "your-api-identifier"
+api_secret = "your-api-secret"
+
+# API request function
+def whmcs_api_request(action, data):
+    # Set up request parameters
+    params = {
+        "identifier": api_identifier,
+        "secret": api_secret,
+        "action": action,
+    }
+    params.update(data)
+
+    # Make the API request
+    response = requests.post(api_url, data=params)
+    response_json = json.loads(response.text)
+
+    # Check for errors
+    if "result" not in response_json or response_json["result"] != "success":
+        error_message = response_json.get("message", "Unknown error")
+        raise Exception(f"WHMCS API error: {error_message}")
+
+    return response_json
+
+# Example usage: Get client details
+client_id = 12345
+client_details = whmcs_api_request("GetClientsDetails", {"clientid": client_id})
+print(client_details)
